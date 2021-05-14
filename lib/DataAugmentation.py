@@ -16,7 +16,9 @@ class RandomStretch(object):
 
 
 class CenterCrop(object):
-    #center crop for template image z
+    '''
+    center crop for examplar z
+    '''
     def __init__(self, size):
         self.size = size
 

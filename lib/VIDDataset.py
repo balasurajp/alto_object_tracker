@@ -13,20 +13,21 @@ import cv2
 
 class VIDDataset(Dataset):
 
-    def __init__(self, config, transforms, mode="Train"):
-        if(mode == 'Train'):
-            imdb_video = json.load(open(config.trnimdb, 'r'))
-        else:
-            imdb_video = json.load(open(config.valimdb, 'r'))
-
+    def __init__(self, imdb, data_dir, config, z_transforms, x_transforms, mode="Train"):
+        imdb_video      = json.load(open(imdb, 'r'))
         self.videos     = imdb_video['videos']
-        self.data_dir   = config.datapath
+        self.data_dir   = data_dir
         self.config     = config
         self.num_videos = int(imdb_video['num_videos'])
         self.center_range = (127,254) # end value not included
 
-        self.z_transforms = transforms[0]
-        self.x_transforms = transforms[1]     
+        self.z_transforms = z_transforms
+        self.x_transforms = x_transforms     
+
+        if mode == "Train":
+            self.num = self.config.num_pairs
+        else:
+            self.num = self.num_videos
 
     def __getitem__(self, rand_vid):
         '''
@@ -35,13 +36,13 @@ class VIDDataset(Dataset):
         # randomly decide the id of video to get z and x
         rand_vid = rand_vid % self.num_videos
 
-        video_keys = list(self.videos.keys())
+        video_keys = self.videos.keys()
         video = self.videos[video_keys[rand_vid]]
 
         # get ids of this video
         video_ids = video[0]
         # how many ids in this video
-        video_id_keys = list(video_ids.keys())
+        video_id_keys = video_ids.keys()
 
         # randomly pick an id for z
         rand_trackid_z = np.random.choice(list(range(len(video_id_keys))))
@@ -52,8 +53,8 @@ class VIDDataset(Dataset):
         rand_z = np.random.choice(range(len(video_id_z)))
 
         # pick a valid instance within frame_range frames from the examplar, excluding the examplar itself
-        possible_x_pos = list(range(len(video_id_z)))
-        rand_x = np.random.choice(possible_x_pos[max(rand_z - self.config.pairband, 0):rand_z] + possible_x_pos[(rand_z + 1):min(rand_z + self.config.pairband, len(video_id_z))])
+        possible_x_pos = range(len(video_id_z))
+        rand_x = np.random.choice(possible_x_pos[max(rand_z - self.config.pos_pair_range, 0):rand_z] + possible_x_pos[(rand_z + 1):min(rand_z + self.config.pos_pair_range, len(video_id_z))])
 
         z = video_id_z[rand_z].copy()    # use copy() here to avoid changing dictionary
         x = video_id_z[rand_x].copy()
@@ -73,7 +74,7 @@ class VIDDataset(Dataset):
         return img_z, img_x
 
     def __len__(self):
-        return int(self.config.numpairs)
+        return int(self.num)
 
     def __cvt_color(self, img):
         if img.shape[-1] == 1:

@@ -19,7 +19,7 @@ class TrackerSiamFC(Tracker):
 
     def __init__(self, net_path=None, **kargs):
         super(TrackerSiamFC, self).__init__(
-            name='ALTO', is_deterministic=True)
+            name='ALTO_v1.1', is_deterministic=True)
         self.cfg = Config()
 
         # setup GPU device if available
