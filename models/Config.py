@@ -1,61 +1,49 @@
 
 class Config:
     def __init__(self):
-        # Baseline pretrained model
-        self.pretrained_model_path = './models/siampretrain/pretrained.pth'
-        
-        # Logistics Info
+        # LOGISTICS INFORMATION
         self.use_gpu = True
-        self.gpu_id = 1
-        self.log_freq = 70
+        self.gpuid = 1
+        self.logfreq = 28
         self.resume = False
         self.start_epoch = 0
         if not self.resume:
             assert self.start_epoch == 0
 
-        # Datapath
-        self.save_base_path = './snapshots'
-        self.save_sub_path = 'alto_v1'
-        self.INV_DATA = "./ILSVRC2015_curation/Data/VID/train"
-        self.INV_IMDB = "./ILSVRC15-curation/imdb_video_train.json"
-        self.GOT10K_DATA = "./ILSVRC2015_curation/Data/VID/train"
-        self.GOT10K_IMDB = "./ILSVRC15-curation/imdb_video_train.json"
+        # PATH VARIABLES
+        self.cwd = None
+        self.snappath = self.cwd + "/snapshots/altov1/"
+        self.datapath = self.cwd + "/ILSVRC2015/curation_data/Data/VID/train"
+        self.trnimdb = self.cwd + "/ILSVRC2015/curation_jsons/train.json"
+        self.valimdb = self.cwd + "/ILSVRC2015/curation_jsons/val.json"
+        self.pretrainedpath = self.cwd + "/models/siampretrain/pretrained.pth"
 
-        # =====================parameters for training========================
-        # augmentation
-        self.DATASET.SHIFT = 4
-        self.DATASET.SCALE = 0.05
-        self.DATASET.COLOR = 1
-        self.DATASET.FLIP = 0
-        self.DATASET.BLUR = 0
-        self.DATASET.ROTATION = 0
+        # =====================TRAINING PARAMETERS========================
+        self.template_size = 127
+        self.instance_size = 255
+        self.stride = 8
 
-        self.TEMPLATE_SIZE = 127
-        self.SEARCH_SIZE = 255
-        self.STRIDE = 8
-        self.rPos = 16
-        self.rNeg = 0
-        self.label_weight_method = "balanced"
-
-
-        self.PAIR_RANGE = 100
-        self.TRAIN_PAIRS = 5.32e4
-        self.num_epoch = 50
-        self.batch_size = 40
+        self.batchsize = 32
+        self.num_epoch = 40
+        self.pairband = 100
+        self.numpairs = 5.32e4
         
-        self.sub_mean = 0
-        self.train_num_workers = 8  # number of threads to load data
-        self.val_num_workers = 8
+        self.trn_numworkers = 8  # number of threads to load data
+        self.val_numworkers = 8
 
-
-        self.lr = 1                  # learning rate of SGD
-        self.momentum = 0.9          # momentum of SGD
-        self.weight_decay = 0.0001   #self.weight_decay = 5e-4     # weight decay of optimizator
+        # Optimizer configuration
+        self.lr = 1                  
+        self.betas = (0.9, 0.999)
+        self.momentum = 0.9         
+        self.weightdecay = 0.0001 #5e-4      # weight decay (0.0001)
         self.bn_momentum = .0003
        
-        # Optimization function Info 
+        # Optimization configuration
         self.loss = 'logistic'
+        self.rPos = 16
+        self.rNeg = 0
         self.neg_label = 0
+        self.label_weight_method = "balanced"
 
         # GAN parameters
         self.initG = 'truncated'
@@ -75,7 +63,7 @@ class Config:
         self.video = "Lemming"
         self.visualization = 0
         self.bbox_output = True
-        self.bbox_output_path = "./tracking_result/"
+        self.bbox_outputpath = "./tracking_result/"
 
         self.context_amount = 0.5
         self.scale_min = 0.2
@@ -83,8 +71,8 @@ class Config:
         self.score_size = 17
 
         # saving path for snapshots in training
-        self.net_base_path = "./snapshots"
+        self.net_basepath = "./snapshots"
         # OTB database path
-        self.seq_base_path = "../OTB"
+        self.seq_basepath = "../OTB"
         # Pretrained model path
         self.net = "SiamFC_G_8_model.pth"

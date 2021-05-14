@@ -16,7 +16,7 @@ def precisionAuc(positions, groundTruth, radius, nStep):
     return score
 
 
-def centerThrErr(score, labels, oldRes, m):
+def centerThrErr(score, labels):
     radiusInPix = 50
     totalStride = 8
     nStep = 100
@@ -37,5 +37,5 @@ def centerThrErr(score, labels, oldRes, m):
 
     res = precisionAuc(positions, centerLabel,
                        radiusInPix * 1. / totalStride, nStep)
-    res = (oldRes * m + res) / (m + batchSize)
+    res = res / batchSize
     return res

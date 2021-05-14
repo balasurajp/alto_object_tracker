@@ -15,10 +15,10 @@ if __name__ == '__main__':
     experiments = [
         #ExperimentGOT10k('/media/hd2/suraj/vot/EvalData/GOT_10K', subset='test'),
         #ExperimentOTB('data/OTB', version=2013),
-        ExperimentOTB('/media/hd1/suraj/vot/EvalData/OTB100', version=2015),
-        ExperimentVOT('/media/hd1/suraj/vot/EvalData/vot2016', version=2016),
+        #ExperimentOTB('/media/hd1/suraj/vot/EvalData/OTB100', version=2015),
+        ExperimentVOT('/media/hd1/suraj/vot/EvalData/vot2019', version=2019),
         #ExperimentDTB70('data/DTB70'),
-        ExperimentTColor128('/media/hd1/suraj/vot/EvalData/TEMPLE_128'),
+        #ExperimentTColor128('/media/hd1/suraj/vot/EvalData/TEMPLE_128'),
         #ExperimentUAV123('data/UAV123', version='UAV123'),
         #ExperimentUAV123('data/UAV123', version='UAV20L'),
         #ExperimentNfS('data/nfs', fps=30),

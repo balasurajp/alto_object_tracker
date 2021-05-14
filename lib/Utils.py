@@ -1,13 +1,9 @@
-"""
-Define some tool functions
-Written by Heng Fan
-"""
-
 import torch
 import numpy as np
 import cv2
 from torchvision import utils
 
+'''
 Corner = namedtuple('Corner', 'x1 y1 x2 y2')
 def corner2center(corner):
     """
@@ -26,20 +22,29 @@ def corner2center(corner):
 
 
 Center = namedtuple('Center', 'x y w h')
+'''
+def roibbox(center, sidelens):
+    batchsize, _ = center.size()
+    btid = torch.arange(batchsize).view(batchsize,1) 
+    lenh = torch.full((batchsize,1), sidelens[0])
+    lenw = torch.full((batchsize,1), sidelens[1])
+
+    centerbbox = torch.cat( (center[:,0], center[:1], lenh, lenw), dim=1)
+
+
+
 def center2corner(center):
-    """
-    [cx, cy, w, h] --> [x1, y1, x2, y2]
-    """
-    if isinstance(center, Center):
-        x, y, w, h = center
-        return Corner(x - w * 0.5, y - h * 0.5, x + w * 0.5, y + h * 0.5)
-    else:
-        x, y, w, h = center[0], center[1], center[2], center[3]
-        x1 = x - w * 0.5
-        y1 = y - h * 0.5
-        x2 = x + w * 0.5
-        y2 = y + h * 0.5
-        return x1, y1, x2, y2
+    # [cx, cy, w, h] --> [x1, y1, x2, y2]
+    x, y, w, h = center[:,0], center[:,1], center[:,2], center[:,3]
+    x1 = x - (w * 0.5)
+    y1 = y - (h * 0.5)
+    x2 = x + (w * 0.5)
+    y2 = y + (h * 0.5)
+
+    x1, y1, x2, y2 = x1.view(center.size(0), 1), y1.view(center.size(0), 1), x2.view(center.size(0), 1), y2.view(center.size(0), 1)
+    center = torch.cat( (x1,y1,x2,y2), dim=1)
+    return corner
+
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -82,8 +87,6 @@ def extract_Dpatches(images, pdresps):
 
         i = index/pdresp.shape[1]
         j = index%pdresp.shape[2]
-
-        print(i)
         
         rp = (63 + 8*i) 
         cp = (63 + 8*j)
@@ -121,7 +124,7 @@ def create_logisticloss_label(label_size, rPos, rNeg, neg_label=-1):
     return logloss_label
 
 
-def create_label(fixed_label_size, config, use_gpu):
+def groundTruth(fixed_label_size, config):
     """
     create label with weight
     """
@@ -133,11 +136,8 @@ def create_label(fixed_label_size, config, use_gpu):
     half = int(np.floor(fixed_label_size[0] / 2) + 1)
 
     if config.label_weight_method == "balanced":
-        fixed_label = create_logisticloss_label(fixed_label_size,
-                                                rPos, rNeg, neg_label)
-        # plt.imshow(fixed_label)
-        # plt.colorbar()
-        # plt.show()
+        fixed_label = create_logisticloss_label(fixed_label_size, rPos, rNeg, neg_label)
+
         instance_weight = torch.ones(fixed_label.shape[0], fixed_label.shape[1])
         tmp_idx_P = np.where(fixed_label == 1)
         sumP = tmp_idx_P[0].size
@@ -145,44 +145,34 @@ def create_label(fixed_label_size, config, use_gpu):
         sumN = tmp_idx_N[0].size
         instance_weight[tmp_idx_P] = 0.5 * instance_weight[tmp_idx_P] / sumP
         instance_weight[tmp_idx_N] = 0.5 * instance_weight[tmp_idx_N] / sumN
-        # plt.imshow(instance_weight)
-        # plt.colorbar()
-        # plt.show()
-
+        
         # reshape label
         fixed_label = fixed_label.clone().view(1, 1, fixed_label.shape[0], fixed_label.shape[1]).contiguous()
         # fixed_label = torch.reshape(fixed_label, (1, 1, fixed_label.shape[0], fixed_label.shape[1]))
-        # copy label to match batchsize
-        fixed_label = fixed_label.repeat(config.batch_size, 1, 1, 1)
+        fixed_label = fixed_label.repeat(config.batchsize, 1, 1, 1)
 
         # reshape weight
         instance_weight = instance_weight.clone().view(1, instance_weight.shape[0], instance_weight.shape[1]).contiguous()
         # instance_weight = torch.reshape(instance_weight, (1, instance_weight.shape[0], instance_weight.shape[1]))
 
-    if use_gpu:
-        return fixed_label.cuda(), instance_weight.cuda()
-    else:
-        return fixed_label, instance_weight
+    if config.use_gpu:
+        fixed_label, instance_weight = fixed_label.cuda(), instance_weight.cuda()
+    
+    return fixed_label, instance_weight
 
 
 def cv2_brg2rgb(bgr_img):
-    """
-    convert brg image to rgb
-    """
+    # convert brg image to rgb
     b, g, r = cv2.split(bgr_img)
     rgb_img = cv2.merge([r, g, b])
-    
     return rgb_img
 
 
 def float32_to_uint8(img):
-    """
-    convert float32 array to uint8
-    """
+    #convert float32 array to uint8
     beyong_255 = np.where(img > 255)
     img[beyong_255] = 255
     less_0 = np.where(img < 0)
     img[less_0] = 0
     img = np.round(img)
-
     return img.astype(np.uint8)
