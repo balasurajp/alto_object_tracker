@@ -95,11 +95,11 @@ end
 
 ### Small image
 
-![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
+![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.PNG)
 
 ### Large image
 
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
+![Branching](https://guides.github.com/activities/hello-world/branching.PNG)
 
 
 ### Definition lists can be used with HTML syntax.
@@ -157,38 +157,38 @@ In this project, we have implemented several ways of improving the performance o
 
   - **Ensemble of Similarity and Dissimilarity network**: In this experiment, we train two siamese networks(i.e Similarity Network & Dissimilarity Network) independently, in which one learns similarity between two image patches and vice-versa. In other words, it is an efficient way of designing correlation and anti-correlation blocks. In dissimilarity net, the ground-truth of score map is designed exactly opposite to siamese network. Then, the final response map is the combination obtained by subtracting Disimilarity Network's score map from Similarity Network's score map.
 
-  <p align="center"> <img src="images/sndn.png" /> </p>
+  <p align="center"> <img src="images/sndn.PNG" /> </p>
 
   - **Fusion of coarse-fine response maps in Siamese network**: In any siamese network version, we must obtain two embeddings from the network for each image i.e. one embedding is collected from intermediate convolution layer till where effective stride’s 4 and other embedding is obtained from end of the network having effective stride 8. Then, correlate the embeddings with effective stride 4, obtained from the template and search image to response maps of sizes 33. Similarly, we obtain score map with size 17 by correlating embeddings with effective stride 8.
 
-  <p align="center"> <img src="images/fcfrm.png" /> </p>
+  <p align="center"> <img src="images/fcfrm.PNG" /> </p>
 
   - **Siamese network with modified residual blocks**: In SiamFC tracker, the backbone CNN (AlexNet) is shallow in nature, which does not take complete advantage of the capability of modern deep CNNs. In this experiment, we leverage the power of deep convolutional neural networks to enhance tracking robustness and accuracy. We observe that directly replacing the backbones with existing powerful architectures, such as ResNet does not improve the tracking perspective. After analyzing the siameseFC network, there are two inferred reasons that control the tracking performance. 1) Increasing the size of receptive field leads to reduction of feature discrimination and localization precision and 2) the padding factor for convolutions blocks induces a positional bias and redundant features in learning. To address these issues, we can built new residual blocks to eliminate the negative impact of padding, and design new architectures using these blocks with controlled size of receptive field and effective network stride. The designed architectures are lightweight in nature to guarantee real-time tracking speed.
 
-  <p align="center"> <img src="images/rnsa.png" /> </p>
+  <p align="center"> <img src="images/rnsa.PNG" /> </p>
 
   - **Adversarial learning into siamese architecture**: In this framework, the key concept is the integration of similarity-learning CNN into the GAN for leveraging the benefits such as balanced accuracy, high speed and high-end generative power. We propose that adversarial learning can improve the precise target localization through the feedback from patch based discriminator, classifying the predicted target patch cropped using the response 27 map and the actual ground-truth patch. To make training procedure converge fast, we incorporate the additional constraint such as distance regression between the predicted and the actual target co-ordinates. Unlike the conventional GANs, our generator is a similarity learning CNN which predicts the trajectory of the target motion by minimizing the error between the predicted and the actual trajectory through the adversarial learning.
 
-  <p align="center"> <img src="images/alto.png" /> </p>
+  <p align="center"> <img src="images/alto.PNG" /> </p>
 
 # Qualitative Results
 
   We show some qualitative results of this tracker on standard benchmark sequences from VOT2016 dataset. The first sequence (bolt1) contain frequent changes in target pose leading to large changes in the target state, and is well suited to evaluate our approach. The second sequence (motocross1sequence) contain the geometric and photo-metric variations such as rotations and illumination changes. For comparison, we included the output of the state-of-the-art Siamese FC tracker. These approaches employ multi-scale search algorithm for determining the target scale i.e width and height of the bounding box. The results show that our adversarial learning approach improves the target localization indeed improving the target scale estimation.
 
-  <p align="center"> <img src="images/qr1.png" /> </p>
+  <p align="center"> <img src="images/qr1.PNG" /> </p>
 
   We compare the original shallow SiamFC- AlexNet with deep SiamResNet22 with OTB15, OTB15, VOT16 and VOT17 benchmark datasets to prove that deep state-of-art architectures can improve tracking accuracy and robustness with necessary modifications in impact parameters.
  
-  <p align="center"> <img src="images/qr2.png" /> </p>
+  <p align="center"> <img src="images/qr2.PNG" /> </p>
 
   Our experiments show that the proposed adversarial approach outperforms the baseline approach and also performs better than many state-of-the-art methods on the VOT2016 benchmark. Though the proposed adversarial learning based tracking framework is demonstrated with Siamese network, mainly due to its simplicity, the key idea can be extended to other versions of Siamese trackers for the generalization.
   
-  <p align="center"> <img src="images/qr3.png" /> </p>
+  <p align="center"> <img src="images/qr3.PNG" /> </p>
 
   We compare our proposed adversarial approach with SiamFC to display the success plot and precision plot over all OTB100 benchmark challenging videos and Temple128 dataset videos. This tracker outperforms SiamFC by achieving Area Under Curve to comparable percentage.
 
-  <p align="center"> <img src="images/qr4.png" /> </p>
-  <p align="center"> <img src="images/qr5.png" /> </p>
+  <p align="center"> <img src="images/qr4.PNG" /> </p>
+  <p align="center"> <img src="images/qr5.PNG" /> </p>
 
 # Conclusion 
 
