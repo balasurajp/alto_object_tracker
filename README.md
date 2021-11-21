@@ -1,2 +1,1 @@
-# ALTO_Tracker
-Adversarial learning for tracking objects (ALTO)
+# Adversarial learning for tracking objects (ALTO)
